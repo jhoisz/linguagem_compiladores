@@ -76,27 +76,35 @@ primitiveType: INT | FLOAT | STRING | BOOL;
 // EXPRESSÕES
 // revisar expressões aritméticas
 expression: ID '=' allExp ';';
-allExp: aritmeticExp+ | logicExp | primitiveType | callFunction;
+allExp: aritmeticExp | logicExp | primitiveType | callFunction;
 
 // Expressões aritméticas
-aritmeticExp: minusUnaryExp | '(' elemAritmetic aritmeticAux+ ')' aritmeticAux* | elemAritmetic aritmeticAux+ | '(' aritmeticExp ')' | primitiveType;
-aritmeticAux: arithmeticOp elemAritmetic;
-minusUnaryExp : '-'+ aritmeticExp | '-'+ ID;
+aritmeticExp: SUB aritmeticExp
+    | '(' aritmeticExp ')' |
+    | aritmeticExp op = (MUL | DIV) aritmeticExp
+	| aritmeticExp op = (ADD | SUB) aritmeticExp
+	| (elemAritmetic | callFunction);
+
 
 // Expressões lógicas
 // revisar: a + b > 0
 logicExp: elemLogic logicOp elemLogic | '(' logicExp ')' | notExp;
-notExp: '!'+ logicExp | '!'+ ID;
+notExp: '!' elemLogic;
 
 // Elementos das expressões
 elemAritmetic: FLOAT | INT | ID;
-elemLogic: primitiveType | ID;
+elemLogic: primitiveType | ID | callFunction | aritmeticExp;
 
 //OPERADORES
-arithmeticOp: '*' | '/' | '-' |  '+';
 logicOp: '==' | '!=' | '>=' | '<=' | '>' | '<';
 
-INT: [1-9]{1}[0-9]*;
+MUL: '*';
+DIV: '/';
+ADD: '+';
+SUB: '-';
+
+// INT: [1-9]{1}[0-9]*; Consertar caso de único 0
+INT: [0-9]*;
 FLOAT: [0-9]+'.'[0-9]+;
 STRING: '"' ~["\r\n\\]+ '"';
 BOOL: 'true' | 'false';
