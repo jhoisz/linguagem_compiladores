@@ -2,23 +2,36 @@ class JasminParser:
     def __init__(self):
         self.path = ''
         self.file = open('Program.j', 'w+')
-        self.file.write('.class public Program')
-        self.file.write('.super java/lang/Object')
+        self.writeLn('.class public Program')
+        self.writeLn('.super java/lang/Object')
+    
+    def writeLn(self, content):
+         self.file.write(content + '\n')
 
     def createMain(self):
-        self.file.write('.method public static main([Ljava/lang/String;)V')
+        self.writeLn('.method public static main([Ljava/lang/String;)V')
 
     def createHeader(self, stack=3, locals=7):
-        self.file.write(f'.limit stack {stack}')
-        self.file.write(f'.limit locals {locals}')
+        self.writeLn(f'.limit stack {stack}')
+        self.writeLn(f'.limit locals {locals}')
 
     def createEnd(self):
-        self.file.write('return')
-        self.file.write('.end method')
+        self.writeLn('return')
+        self.writeLn('.end method')
 
     def createInitPrint(self):
-        self.file.write('getstatic java/lang/System/out Ljava/io/PrintStream;')
+        self.writeLn('getstatic java/lang/System/out Ljava/io/PrintStream;')
 
     def createPrint(self, args):
-        self.file.write(f'ldc {args}')
-        self.file.write('invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V')
+        self.writeLn(f'ldc "{args}"')
+        self.writeLn('invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V')
+
+    def createInitScanner(self, address):
+        self.writeLn('new java/util/Scanner')
+        self.writeLn('dup')
+        self.writeLn('getstatic java/lang/System/in Ljava/io/InputStream;')
+        self.writeLn('invokespecial java/util/Scanner/<init>(Ljava/io/InputStream;)V')
+        self.writeLn(f'astore {address}')
+
+    def createScanner(self):
+        self.writeLn('invokevirtual java/util/Scanner/nextLine()Ljava/lang/String;')

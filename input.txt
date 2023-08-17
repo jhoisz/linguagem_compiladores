@@ -1,0 +1,7 @@
+main:
+    var:
+        nome: str;
+
+    print("Digite alguma coisa:");
+    scanf(nome);
+end
