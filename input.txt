@@ -1,7 +1,21 @@
 main:
     var:
+        numero: int;
         nome: str;
+        nota1, nota2: float;
 
-    print("Digite alguma coisa:");
+    print("Digite numero:");
+    scanf(numero);
+    print("Digite nome:");
     scanf(nome);
+    print("Digite nota1:");
+    scanf(nota1);
+    print("Digite nota2:");
+    scanf(nota2);
+    print("Resultados:");
+    print(nota1);
+    print(nome);
+    print(nota2);
+    print(numero);
+
 end

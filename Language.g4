@@ -62,7 +62,7 @@ varDeclaration : 'var' ':' contentVarDeclaration+;
 
 contentVarDeclaration: var ';' | constVar ';';
 
-var: id+ ':' type;
+var: id ':' type;
 id: ID (',' id)*;
 
 // Variáveis constantes

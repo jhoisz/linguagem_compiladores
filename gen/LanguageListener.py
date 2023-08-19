@@ -12,6 +12,8 @@ class LanguageListener(ParseTreeListener):
 
     def __init__(self):
         self.jasminParser = JasminParser()
+        self.currentId = 1
+        self.sybolTable = {}
 
     # Enter a parse tree produced by LanguageParser#prog.
     def enterProg(self, ctx:LanguageParser.ProgContext):
@@ -191,7 +193,11 @@ class LanguageListener(ParseTreeListener):
 
     # Exit a parse tree produced by LanguageParser#scanf.
     def exitScanf(self, ctx:LanguageParser.ScanfContext):
-        pass
+        for test in ctx.id_():
+            var = self.sybolTable[test.ID().getText()]
+            self.jasminParser.callScanner(var[1])
+            self.jasminParser.storage(var[0],var[1])
+
 
 
     # Enter a parse tree produced by LanguageParser#varDeclaration.
@@ -211,14 +217,19 @@ class LanguageListener(ParseTreeListener):
     def exitContentVarDeclaration(self, ctx:LanguageParser.ContentVarDeclarationContext):
         pass
 
-
     # Enter a parse tree produced by LanguageParser#var.
     def enterVar(self, ctx:LanguageParser.VarContext):
         pass
 
     # Exit a parse tree produced by LanguageParser#var.
     def exitVar(self, ctx:LanguageParser.VarContext):
-        pass
+        for test in ctx.id_():
+            type = ctx.type_().getText()
+            self.sybolTable[test.ID().getText()] = [self.currentId,type , self.initialValue(type)]
+            self.currentId += 1
+            self.jasminParser.loadConst(self.initialValue(type),type)
+            self.jasminParser.storage(self.sybolTable[test.ID().getText()][0],ctx.type_().getText())
+
 
 
     # Enter a parse tree produced by LanguageParser#id.
@@ -336,6 +347,18 @@ class LanguageListener(ParseTreeListener):
     # Exit a parse tree produced by LanguageParser#logicOp.
     def exitLogicOp(self, ctx:LanguageParser.LogicOpContext):
         pass
+
+    def initialValue(self, type):
+        if type == "int":
+            return 0
+        elif type == "str":
+            return ""
+        elif type == "bool":
+            return 0
+        elif type == "float":
+            return 0.0
+
+
 
 
 

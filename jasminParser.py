@@ -24,7 +24,12 @@ class JasminParser:
 
     def createPrint(self, args):
         self.writeLn(f'ldc "{args}"')
-        self.writeLn('invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V')
+        if (type == "str"):
+            self.writeLn('invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V')
+        elif(type == "int"):
+            self.writeLn('invokevirtual java/io/PrintStream/println(I)V')
+        elif (type == "float"):
+            self.writeLn('invokevirtual java/io/PrintStream/println(F)V')
 
     def createInitScanner(self, address):
         self.writeLn('new java/util/Scanner')
@@ -33,5 +38,28 @@ class JasminParser:
         self.writeLn('invokespecial java/util/Scanner/<init>(Ljava/io/InputStream;)V')
         self.writeLn(f'astore {address}')
 
-    def createScanner(self):
-        self.writeLn('invokevirtual java/util/Scanner/nextLine()Ljava/lang/String;')
+    def callScanner(self,type):
+        self.writeLn("aload 0")
+        if (type == "str"):
+            self.writeLn('invokevirtual java/util/Scanner/nextLine()Ljava/lang/String;')
+        elif(type == "int"):
+            self.writeLn('invokevirtual java/util/Scanner/nextInt()I;')
+        elif (type == "float"):
+            self.writeLn('invokevirtual java/util/Scanner/nextFloat()F;')
+
+
+    def loadConst(self,value,type):
+        if type == "str":
+            self.writeLn(f'ldc \"{value}\"')
+        else:
+            self.writeLn(f'ldc {value}')
+
+    def storage(self, id, type):
+        if type == "str":
+            self.writeLn(f'astore {id}')
+        elif type == "int":
+            self.writeLn(f'istore {id}')
+        elif type == "bool":
+            self.writeLn(f'istore {id}')
+        elif type == "float":
+            self.writeLn(f'fstore {id}')
