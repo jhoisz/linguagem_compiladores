@@ -11,7 +11,7 @@ class JasminParser:
     def createMain(self):
         self.writeLn('.method public static main([Ljava/lang/String;)V')
 
-    def createHeader(self, stack=3, locals=7):
+    def createHeader(self, stack=10, locals=7):
         self.writeLn(f'.limit stack {stack}')
         self.writeLn(f'.limit locals {locals}')
 
@@ -19,16 +19,25 @@ class JasminParser:
         self.writeLn('return')
         self.writeLn('.end method')
 
-    def createInitPrint(self):
+    def createInitPrint(self,address):
         self.writeLn('getstatic java/lang/System/out Ljava/io/PrintStream;')
+        self.writeLn(f'astore {address}')
 
-    def createPrint(self, args):
-        self.writeLn(f'ldc "{args}"')
+    def createPrintValue(self, value):
+        self.writeLn('getstatic java/lang/System/out Ljava/io/PrintStream;')
+        self.writeLn(f'ldc {value}')
+        self.writeLn('invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V')
+
+    def createPrint(self, args, type):
+        self.writeLn('getstatic java/lang/System/out Ljava/io/PrintStream;')
         if (type == "str"):
+            self.writeLn(f'aload {args}')
             self.writeLn('invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V')
         elif(type == "int"):
+            self.writeLn(f'iload {args}')
             self.writeLn('invokevirtual java/io/PrintStream/println(I)V')
         elif (type == "float"):
+            self.writeLn(f'fload {args}')
             self.writeLn('invokevirtual java/io/PrintStream/println(F)V')
 
     def createInitScanner(self, address):
@@ -43,9 +52,9 @@ class JasminParser:
         if (type == "str"):
             self.writeLn('invokevirtual java/util/Scanner/nextLine()Ljava/lang/String;')
         elif(type == "int"):
-            self.writeLn('invokevirtual java/util/Scanner/nextInt()I;')
+            self.writeLn('invokevirtual java/util/Scanner/nextInt()I')
         elif (type == "float"):
-            self.writeLn('invokevirtual java/util/Scanner/nextFloat()F;')
+            self.writeLn('invokevirtual java/util/Scanner/nextFloat()F')
 
 
     def loadConst(self,value,type):

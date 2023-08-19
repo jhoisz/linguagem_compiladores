@@ -1,4 +1,4 @@
-# Generated from C:/Users/VAIO/Desktop/compiladores/javapy/linguagem_compiladores\Language.g4 by ANTLR 4.12.0
+# Generated from C:/Users/Anderson Guimarães/PycharmProjects/linguagem_compiladores\Language.g4 by ANTLR 4.12.0
 from antlr4 import *
 from io import StringIO
 import sys

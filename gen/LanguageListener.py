@@ -13,7 +13,7 @@ class LanguageListener(ParseTreeListener):
     def __init__(self):
         self.jasminParser = JasminParser()
         self.currentId = 1
-        self.sybolTable = {}
+        self.symbolTable = {}
 
     # Enter a parse tree produced by LanguageParser#prog.
     def enterProg(self, ctx:LanguageParser.ProgContext):
@@ -26,8 +26,7 @@ class LanguageListener(ParseTreeListener):
 
     # Enter a parse tree produced by LanguageParser#main.
     def enterMain(self, ctx:LanguageParser.MainContext):
-        self.jasminParser.createInitPrint()
-        self.jasminParser.createPrint('Hello Word')
+        self.jasminParser.createInitScanner(0)
 
     # Exit a parse tree produced by LanguageParser#main.
     def exitMain(self, ctx:LanguageParser.MainContext):
@@ -175,7 +174,12 @@ class LanguageListener(ParseTreeListener):
 
     # Exit a parse tree produced by LanguageParser#print.
     def exitPrint(self, ctx:LanguageParser.PrintContext):
-        pass
+        for param in ctx.printParams():
+            if param.ID() is not None:
+                id = self.symbolTable[param.ID().getText()]
+                self.jasminParser.createPrint(id[0],id[1])
+            else:
+                self.jasminParser.createPrintValue(param.allExp().primitiveType().STRING().getText())
 
 
     # Enter a parse tree produced by LanguageParser#printParams.
@@ -194,7 +198,7 @@ class LanguageListener(ParseTreeListener):
     # Exit a parse tree produced by LanguageParser#scanf.
     def exitScanf(self, ctx:LanguageParser.ScanfContext):
         for test in ctx.id_():
-            var = self.sybolTable[test.ID().getText()]
+            var = self.symbolTable[test.ID().getText()]
             self.jasminParser.callScanner(var[1])
             self.jasminParser.storage(var[0],var[1])
 
@@ -223,13 +227,17 @@ class LanguageListener(ParseTreeListener):
 
     # Exit a parse tree produced by LanguageParser#var.
     def exitVar(self, ctx:LanguageParser.VarContext):
-        for test in ctx.id_():
+        id = ctx.id_()
+        while True:
             type = ctx.type_().getText()
-            self.sybolTable[test.ID().getText()] = [self.currentId,type , self.initialValue(type)]
+            self.symbolTable[id.ID().getText()] = [self.currentId, type , self.initialValue(type)]
             self.currentId += 1
             self.jasminParser.loadConst(self.initialValue(type),type)
-            self.jasminParser.storage(self.sybolTable[test.ID().getText()][0],ctx.type_().getText())
-
+            self.jasminParser.storage(self.symbolTable[id.ID().getText()][0], ctx.type_().getText())
+            if len(id.id_()) == 0:
+                break
+            else:
+                id = id.id_()[0]
 
 
     # Enter a parse tree produced by LanguageParser#id.
