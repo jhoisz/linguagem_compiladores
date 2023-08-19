@@ -19,15 +19,18 @@ class JasminParser:
         self.writeLn('return')
         self.writeLn('.end method')
 
+    #iniciando print
     def createInitPrint(self,address):
         self.writeLn('getstatic java/lang/System/out Ljava/io/PrintStream;')
         self.writeLn(f'astore {address}')
 
+    #print de constantes
     def createPrintValue(self, value):
         self.writeLn('getstatic java/lang/System/out Ljava/io/PrintStream;')
         self.writeLn(f'ldc {value}')
         self.writeLn('invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V')
 
+    #chamando o print para uma única variável de acordo com seu tipo
     def createPrint(self, args, type):
         self.writeLn('getstatic java/lang/System/out Ljava/io/PrintStream;')
         if (type == "str"):
@@ -40,6 +43,7 @@ class JasminParser:
             self.writeLn(f'fload {args}')
             self.writeLn('invokevirtual java/io/PrintStream/println(F)V')
 
+    #inicializando scanner
     def createInitScanner(self, address):
         self.writeLn('new java/util/Scanner')
         self.writeLn('dup')
@@ -47,6 +51,7 @@ class JasminParser:
         self.writeLn('invokespecial java/util/Scanner/<init>(Ljava/io/InputStream;)V')
         self.writeLn(f'astore {address}')
 
+    #chama o scanner de acordo com o tipo
     def callScanner(self,type):
         self.writeLn("aload 0")
         if (type == "str"):
@@ -57,12 +62,13 @@ class JasminParser:
             self.writeLn('invokevirtual java/util/Scanner/nextFloat()F')
 
 
+    #colocando o valor de uma constante na pilha
     def loadConst(self,value,type):
         if type == "str":
             self.writeLn(f'ldc \"{value}\"')
         else:
             self.writeLn(f'ldc {value}')
-
+    #guradando valor em uma variável no enderco id
     def storage(self, id, type):
         if type == "str":
             self.writeLn(f'astore {id}')
@@ -72,3 +78,7 @@ class JasminParser:
             self.writeLn(f'istore {id}')
         elif type == "float":
             self.writeLn(f'fstore {id}')
+
+    # def clean(self, type):
+    #     if type!= "str":
+    #         self.writeLn('pop')

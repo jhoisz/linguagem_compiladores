@@ -6,7 +6,18 @@ main:
 
     print("Digite numero:");
     scanf(numero);
+    print("digite nome:");
+    scanf(nome);
+    print("digite nota1");
+    scanf(nota1);
+    print("digite nota3");
+    scanf(nota3);
+    print("resultados:");
+    print(nota1);
+    print(nome);
+    print(nota3);
 
     print(numero);
+
 
 end

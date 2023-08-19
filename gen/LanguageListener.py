@@ -201,6 +201,7 @@ class LanguageListener(ParseTreeListener):
             var = self.symbolTable[test.ID().getText()]
             self.jasminParser.callScanner(var[1])
             self.jasminParser.storage(var[0],var[1])
+            self.jasminParser.clean(var[1])
 
 
 
@@ -287,11 +288,16 @@ class LanguageListener(ParseTreeListener):
 
     # Enter a parse tree produced by LanguageParser#expression.
     def enterExpression(self, ctx:LanguageParser.ExpressionContext):
+        child = ctx.getChild(2)
+        #child.inh = 'attr'
         pass
 
     # Exit a parse tree produced by LanguageParser#expression.
     def exitExpression(self, ctx:LanguageParser.ExpressionContext):
-        pass
+        if ctx.ID().getText() not in self.symbolTable:
+            raise Exception("variavel não declarada anteriormente")
+        else:
+            pass
 
 
     # Enter a parse tree produced by LanguageParser#allExp.
@@ -300,7 +306,8 @@ class LanguageListener(ParseTreeListener):
 
     # Exit a parse tree produced by LanguageParser#allExp.
     def exitAllExp(self, ctx:LanguageParser.AllExpContext):
-        pass
+        if ctx.inh == 'attr':
+            pass
 
 
     # Enter a parse tree produced by LanguageParser#aritmeticExp.
