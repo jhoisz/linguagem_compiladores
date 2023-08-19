@@ -1,4 +1,4 @@
-# Generated from C:/Users/Anderson Guimarães/PycharmProjects/linguagem_compiladores\Language.g4 by ANTLR 4.12.0
+# Generated from C:/Users/Anderson Guimarï¿½es/PycharmProjects/linguagem_compiladores\Language.g4 by ANTLR 4.12.0
 # encoding: utf-8
 from antlr4 import *
 from io import StringIO
@@ -251,6 +251,8 @@ class LanguageParser ( Parser ):
     Space=39
     COMMENT_ONE_LINE=40
     COMMENT_MULT_LINES=41
+    type = ''
+    inherit = ''
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)

@@ -4,6 +4,16 @@ class JasminParser:
         self.file = open('Program.j', 'w+')
         self.writeLn('.class public Program')
         self.writeLn('.super java/lang/Object')
+        self.count = 0
+        self.ifstack=[]
+        self.operators_reverse = {
+            "!=": "if_icmpeq",
+            "==": "if_icmpne",
+            ">=": "if_icmplt",
+            ">": "if_icmple",
+            "<=": "if_icmpgt",
+            "<": "if_icmpge",
+        }
     
     def writeLn(self, content):
          self.file.write(content + '\n')
@@ -43,6 +53,14 @@ class JasminParser:
             self.writeLn(f'fload {args}')
             self.writeLn('invokevirtual java/io/PrintStream/println(F)V')
 
+    def loadVar(self,args,type):
+        if (type == "str"):
+            self.writeLn(f'aload {args}')
+        elif(type == "int"):
+            self.writeLn(f'iload {args}')
+        elif (type == "float"):
+            self.writeLn(f'fload {args}')
+
     #inicializando scanner
     def createInitScanner(self, address):
         self.writeLn('new java/util/Scanner')
@@ -79,6 +97,42 @@ class JasminParser:
         elif type == "float":
             self.writeLn(f'fstore {id}')
 
+    def callIf(self, logicOp):
+        self.writeLn(f'{self.operators_reverse[logicOp]} l{self.ifstack[-1][0]}')
+
+    def aritimeticOperand(self,op,type):
+        if type == "int":
+            if op == "+":
+                self.writeLn("iadd")
+            if op == "-":
+                self.writeLn("isub")
+            if op == "*":
+                self.writeLn("imul")
+            if op == "/":
+                self.writeLn("idiv")
+        if type == "float":
+            if op == "+":
+                self.writeLn("fadd")
+            if op == "-":
+                self.writeLn("fsub")
+            if op == "*":
+                self.writeLn("fmul")
+            if op == "/":
+                self.writeLn("fdiv")
+
+    def placeLabel(self, type):
+        if type == "else":
+            self.writeLn(f'l{self.ifstack[-1][0]}:')
+        else:
+            self.writeLn(f'l{self.ifstack[-1][1]}:')
+
+    def goto(self, type, local):
+        if type == "if" and local == "end":
+            self.writeLn(f'goto l{self.ifstack[-1][1]}')
+
+    def createIfLabels(self):
+        self.ifstack.append([self.count,self.count+1])
+        self.count +=2;
     # def clean(self, type):
     #     if type!= "str":
     #         self.writeLn('pop')

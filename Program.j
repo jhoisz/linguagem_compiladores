@@ -10,52 +10,51 @@ invokespecial java/util/Scanner/<init>(Ljava/io/InputStream;)V
 astore 0
 ldc 0
 istore 1
+ldc 0
+istore 2
+ldc 0
+istore 3
 ldc ""
-astore 2
-ldc 0.0
-fstore 3
-ldc 0.0
-fstore 4
-ldc 0.0
-fstore 5
+astore 4
 getstatic java/lang/System/out Ljava/io/PrintStream;
-ldc "Digite numero:"
+ldc "digite o valor de x:"
 invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
 aload 0
 invokevirtual java/util/Scanner/nextInt()I
 istore 1
 getstatic java/lang/System/out Ljava/io/PrintStream;
-ldc "digite nome:"
+ldc "digite o valor de y:"
 invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
 aload 0
-invokevirtual java/util/Scanner/nextLine()Ljava/lang/String;
-astore 2
-getstatic java/lang/System/out Ljava/io/PrintStream;
-ldc "digite nota1"
-invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
-aload 0
-invokevirtual java/util/Scanner/nextFloat()F
-fstore 3
-getstatic java/lang/System/out Ljava/io/PrintStream;
-ldc "digite nota3"
-invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
-aload 0
-invokevirtual java/util/Scanner/nextFloat()F
-fstore 5
-getstatic java/lang/System/out Ljava/io/PrintStream;
-ldc "resultados:"
-invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
-getstatic java/lang/System/out Ljava/io/PrintStream;
-fload 3
-invokevirtual java/io/PrintStream/println(F)V
-getstatic java/lang/System/out Ljava/io/PrintStream;
-aload 2
-invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
-getstatic java/lang/System/out Ljava/io/PrintStream;
-fload 5
-invokevirtual java/io/PrintStream/println(F)V
-getstatic java/lang/System/out Ljava/io/PrintStream;
+invokevirtual java/util/Scanner/nextInt()I
+istore 2
 iload 1
+iload 2
+if_icmple l0
+iload 1
+ldc 2
+imul
+iload 2
+ldc 2
+imul
+iadd
+istore 3
+goto l1
+l0:
+iload 1
+ldc 3
+imul
+iload 2
+ldc 3
+imul
+iadd
+istore 3
+l1:
+getstatic java/lang/System/out Ljava/io/PrintStream;
+ldc "resultado"
+invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
+getstatic java/lang/System/out Ljava/io/PrintStream;
+iload 3
 invokevirtual java/io/PrintStream/println(I)V
 return
 .end method
