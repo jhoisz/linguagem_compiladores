@@ -28,33 +28,30 @@ invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
 aload 0
 invokevirtual java/util/Scanner/nextInt()I
 istore 2
-iload 1
-iload 2
-if_icmple l0
-iload 1
-ldc 2
-imul
-iload 2
-ldc 2
-imul
-iadd
-istore 3
-goto l1
 l0:
 iload 1
-ldc 3
-imul
+ldc 100
+if_icmpge l1
+iload 1
 iload 2
-ldc 3
-imul
-iadd
-istore 3
-l1:
+if_icmple l2
+goto l1
+l2:
+iload 1
+ldc 10
+if_icmpge l4
 getstatic java/lang/System/out Ljava/io/PrintStream;
-ldc "resultado"
+ldc "pouco"
 invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
+l4:
 getstatic java/lang/System/out Ljava/io/PrintStream;
-iload 3
+iload 1
 invokevirtual java/io/PrintStream/println(I)V
+iload 1
+ldc 2
+iadd
+istore 1
+goto l0
+l1:
 return
 .end method

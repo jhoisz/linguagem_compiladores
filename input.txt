@@ -6,13 +6,14 @@ main:
         scanf(x);
         print("digite o valor de y:");
         scanf(y);
-        if(x>y):
-            z = x *2 + y*2;
-        else:
-            z = x *3 + y*3;
+        while(x<100):
+            if(x>y):
+            break;
+            end
+            if(x<10):
+            print("pouco");
+            end
+            print(x);
+            x = x + 2;
         end
-        print("resultado");
-        print(z);
-
-
 end

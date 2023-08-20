@@ -6,6 +6,7 @@ class JasminParser:
         self.writeLn('.super java/lang/Object')
         self.count = 0
         self.ifstack=[]
+        self.loopstack=[]
         self.operators_reverse = {
             "!=": "if_icmpeq",
             "==": "if_icmpne",
@@ -97,8 +98,8 @@ class JasminParser:
         elif type == "float":
             self.writeLn(f'fstore {id}')
 
-    def callIf(self, logicOp):
-        self.writeLn(f'{self.operators_reverse[logicOp]} l{self.ifstack[-1][0]}')
+    def callCondition(self, logicOp, type):
+        self.writeLn(f'{self.operators_reverse[logicOp]} l{self.ifstack[-1][0]if type=="if"else self.loopstack[-1][1]}')
 
     def aritimeticOperand(self,op,type):
         if type == "int":
@@ -120,19 +121,38 @@ class JasminParser:
             if op == "/":
                 self.writeLn("fdiv")
 
-    def placeLabel(self, type):
+    def placeLabelIf(self, type):
         if type == "else":
             self.writeLn(f'l{self.ifstack[-1][0]}:')
         else:
             self.writeLn(f'l{self.ifstack[-1][1]}:')
+            self.ifstack.pop()
+
+    def placeLabelLoop(self, type):
+        if type == "while" :
+            self.writeLn(f'l{self.loopstack[-1][0]}:')
+        else:
+            self.writeLn(f'l{self.loopstack[-1][1]}:')
+            self.loopstack.pop()
 
     def goto(self, type, local):
         if type == "if" and local == "end":
             self.writeLn(f'goto l{self.ifstack[-1][1]}')
+        elif type == "if" and local == "else":
+            self.writeLn(f'goto l{self.ifstack[-1][0]}')
+        elif type == "while" and local == "ini":
+            self.writeLn(f'goto l{self.loopstack[-1][0]}')
+        elif type == "while" and local == "end":
+            self.writeLn(f'goto l{self.loopstack[-1][1]}')
+
 
     def createIfLabels(self):
         self.ifstack.append([self.count,self.count+1])
-        self.count +=2;
+        self.count +=2
+
+    def createLoopLabels(self):
+        self.loopstack.append([self.count, self.count + 1])
+        self.count += 2
     # def clean(self, type):
     #     if type!= "str":
     #         self.writeLn('pop')

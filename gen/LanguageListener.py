@@ -117,8 +117,8 @@ class LanguageListener(ParseTreeListener):
     # Enter a parse tree produced by LanguageParser#conditions.
     def enterConditions(self, ctx:LanguageParser.ConditionsContext):
         child = ctx.getChild(0)
-        child.inherit = 'if'
-        self.jasminParser.createIfLabels();
+        child.inherit = ctx.inherit
+
 
     # Exit a parse tree produced by LanguageParser#conditions.
     def exitConditions(self, ctx:LanguageParser.ConditionsContext):
@@ -127,30 +127,40 @@ class LanguageListener(ParseTreeListener):
 
     # Enter a parse tree produced by LanguageParser#ifelse.
     def enterIfelse(self, ctx:LanguageParser.IfelseContext):
-        pass
+        self.jasminParser.createIfLabels()
+        child = ctx.getChild(2)
+        child.inherit = "if"
 
     # Exit a parse tree produced by LanguageParser#ifelse.
     def exitIfelse(self, ctx:LanguageParser.IfelseContext):
-        pass
+        if ctx.else_() is not None:
+            self.jasminParser.placeLabelIf("end")
+        else:
+            self.jasminParser.placeLabelIf("else")
 
 
     # Enter a parse tree produced by LanguageParser#else.
     def enterElse(self, ctx:LanguageParser.ElseContext):
         self.jasminParser.goto("if","end")
-        self.jasminParser.placeLabel("else")
+        self.jasminParser.placeLabelIf("else")
 
     # Exit a parse tree produced by LanguageParser#else.
     def exitElse(self, ctx:LanguageParser.ElseContext):
-        self.jasminParser.placeLabel("end")
+       pass
 
 
     # Enter a parse tree produced by LanguageParser#while.
     def enterWhile(self, ctx:LanguageParser.WhileContext):
-        pass
+        self.jasminParser.createLoopLabels()
+        self.jasminParser.placeLabelLoop("while")
+        child = ctx.getChild(2)
+        child.inherit = "while"
+
 
     # Exit a parse tree produced by LanguageParser#while.
     def exitWhile(self, ctx:LanguageParser.WhileContext):
-        pass
+        self.jasminParser.goto("while","ini")
+        self.jasminParser.placeLabelLoop("end")
 
 
     # Enter a parse tree produced by LanguageParser#break.
@@ -159,8 +169,7 @@ class LanguageListener(ParseTreeListener):
 
     # Exit a parse tree produced by LanguageParser#break.
     def exitBreak(self, ctx:LanguageParser.BreakContext):
-        pass
-
+        self.jasminParser.goto("while","end")
 
     # Enter a parse tree produced by LanguageParser#nativeFunctions.
     def enterNativeFunctions(self, ctx:LanguageParser.NativeFunctionsContext):
@@ -343,8 +352,8 @@ class LanguageListener(ParseTreeListener):
 
     # Exit a parse tree produced by LanguageParser#logicExp.
     def exitLogicExp(self, ctx:LanguageParser.LogicExpContext):
-        if ctx.inherit == 'if':
-            self.jasminParser.callIf(ctx.logicOp().getText())
+        if ctx.inherit is not None:
+            self.jasminParser.callCondition(ctx.logicOp().getText(),ctx.inherit)
 
 
     # Enter a parse tree produced by LanguageParser#notExp.
