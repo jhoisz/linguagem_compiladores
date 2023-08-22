@@ -37,6 +37,7 @@ class JasminParser:
     def createEnd(self):
         self.writeLn('return')
         self.writeLn('.end method')
+        self.file.close()
 
     #iniciando print
     def createInitPrint(self,address):
