@@ -182,7 +182,7 @@ class LanguageListener(ParseTreeListener):
 
     # Enter a parse tree produced by LanguageParser#print.
     def enterPrint(self, ctx:LanguageParser.PrintContext):
-        pass
+        self.jasminParser.getPrint()
 
     # Exit a parse tree produced by LanguageParser#print.
     def exitPrint(self, ctx:LanguageParser.PrintContext):
@@ -191,7 +191,7 @@ class LanguageListener(ParseTreeListener):
                 id = self.symbolTable[param.ID().getText()]
                 self.jasminParser.createPrint(id[0],id[1])
             else:
-                self.jasminParser.createPrintValue(param.allExp().primitiveType().STRING().getText())
+                self.jasminParser.createPrintValue()
 
 
     # Enter a parse tree produced by LanguageParser#printParams.
@@ -301,6 +301,12 @@ class LanguageListener(ParseTreeListener):
         elif ctx.INT() is not None:
             self.jasminParser.loadConst(ctx.INT().getText(), "int")
             ctx.type = "int"
+        elif ctx.STRING() is not None:
+            self.jasminParser.loadConst(ctx.STRING().getText(), "str")
+            ctx.type = "str"
+        elif ctx.BOOL() is not None:
+            self.jasminParser.loadConst(ctx.BOOL().getText(), "bool")
+            ctx.type = "bool"
 
     # Enter a parse tree produced by LanguageParser#expression.
     def enterExpression(self, ctx:LanguageParser.ExpressionContext):
@@ -312,7 +318,15 @@ class LanguageListener(ParseTreeListener):
         if ctx.ID().getText() not in self.symbolTable:
             raise Exception("variavel não declarada anteriormente")
         else:
+            ctx.type = ctx.getChild(2).type
             var = self.symbolTable[ctx.ID().getText()]
+            if ctx.type == "int" and var[1] == "float":
+                self.jasminParser.intToFloat(2)
+            elif ctx.type == "float" and var[1] == "int":
+                self.jasminParser.floatToInt(2)
+            elif ctx.type != var[1]:
+                raise Exception(f'Erro de atribuição! na variável {ctx.ID().getText()} era esperado {var[1]} mas foi recebido {ctx.type}')
+
             self.jasminParser.storage(var[0],var[1])
 
 
@@ -322,7 +336,7 @@ class LanguageListener(ParseTreeListener):
 
     # Exit a parse tree produced by LanguageParser#allExp.
     def exitAllExp(self, ctx:LanguageParser.AllExpContext):
-        pass
+        ctx.type = ctx.getChild(0).type
 
 
     # Enter a parse tree produced by LanguageParser#aritmeticExp.
@@ -333,18 +347,39 @@ class LanguageListener(ParseTreeListener):
     def exitAritmeticExp(self, ctx:LanguageParser.AritmeticExpContext):
         if ctx.elemAritmetic() is not None:
             ctx.type = ctx.elemAritmetic().type
+        elif len(ctx.aritmeticExp()) == 1:
+            ctx.type = ctx.aritmeticExp()[0].type
+            if ctx.SUB() is not None:
+                self.jasminParser.aritimeticOperand("@",ctx.type)
         else:
-            for art in ctx.aritmeticExp():
-                ctx.type  = art.type
+            operation = self.getOperation(ctx)
+            operand1 = ctx.aritmeticExp()[0]
+            operand2 = ctx.aritmeticExp()[1]
+            if operand1.type not in ["float","int"]:
+                raise Exception(f'Operação \"{operation}\" inválida para tipo {operand1.type}')
+            elif operand2.type not in ["float","int"]:
+                raise Exception(f'Operação \"{operation}\" inválida para tipo {operand2.type}')
 
+            if operand1.type == operand2.type:
+                ctx.type = operand2.type
+            else:
+                if operand2.type == "int":
+                    self.jasminParser.intToFloat(2)
+                else:
+                    self.jasminParser.intToFloat(1)
+                ctx.type = "float"
+            self.jasminParser.aritimeticOperand(operation, ctx.type)
+
+
+    def getOperation(self, ctx:LanguageParser.AritmeticExpContext):
         if ctx.DIV() is not None:
-            self.jasminParser.aritimeticOperand("/",ctx.type)
+            return "/"
         if ctx.ADD() is not None:
-            self.jasminParser.aritimeticOperand("+",ctx.type)
+            return "+"
         if ctx.MUL() is not None:
-            self.jasminParser.aritimeticOperand("*",ctx.type)
+            return "*"
         if ctx.SUB() is not None:
-            self.jasminParser.aritimeticOperand("-",ctx.type)
+            return "-"
 
     # Enter a parse tree produced by LanguageParser#logicExp.
     def enterLogicExp(self, ctx:LanguageParser.LogicExpContext):
@@ -352,8 +387,30 @@ class LanguageListener(ParseTreeListener):
 
     # Exit a parse tree produced by LanguageParser#logicExp.
     def exitLogicExp(self, ctx:LanguageParser.LogicExpContext):
-        if ctx.inherit is not None:
-            self.jasminParser.callCondition(ctx.logicOp().getText(),ctx.inherit)
+        typeIf = ""
+        if ctx.logicExp() is not None and len(ctx.logicExp())==1:
+            ctx.type = "ifunario"
+        else:
+            operand1 = ctx.elemLogic()[0]
+            operand2 = ctx.elemLogic()[1]
+
+            if operand1.type not in ["float","int"]:
+                raise Exception(f'Operação {ctx.logicOp().getText()} inválida para tipo {operand1.type}')
+            elif operand2.type not in ["float","int"]:
+                raise Exception(f'Operação {ctx.logicOp().getText()} inválida para tipo {operand1.type}')
+
+
+            if operand1.type == operand2.type:
+                typeIf = operand2.type
+            else:
+                if operand2.type == "int":
+                    self.jasminParser.intToFloat(2)
+                else:
+                    self.jasminParser.intToFloat(1)
+                typeIf = "float"
+            if ctx.inherit is not "attr":
+                self.jasminParser.callCondition(ctx.logicOp().getText(),ctx.inherit,typeIf)
+            ctx.type = "bool"
 
 
     # Enter a parse tree produced by LanguageParser#notExp.
@@ -363,7 +420,6 @@ class LanguageListener(ParseTreeListener):
     # Exit a parse tree produced by LanguageParser#notExp.
     def exitNotExp(self, ctx:LanguageParser.NotExpContext):
         pass
-
 
     # Enter a parse tree produced by LanguageParser#elemAritmetic.
     def enterElemAritmetic(self, ctx:LanguageParser.ElemAritmeticContext):
@@ -376,7 +432,9 @@ class LanguageListener(ParseTreeListener):
             try:
                 var = self.symbolTable[ctx.ID().getText()]
             except:
-                raise Exception("identificador não declararo!!")
+                raise Exception(f'identificador não declarado: {ctx.ID().getText()}')
+            if var[1] not in ["float","int"]:
+                raise Exception(f'operação inválida para variável \"{ctx.ID().getText()}\" de tipo: {var[1]}')
             self.jasminParser.loadVar(var[0], var[1])
             ctx.type = var[1]
         elif ctx.FLOAT() is not None:
@@ -400,6 +458,8 @@ class LanguageListener(ParseTreeListener):
                 raise Exception("identificador não declararo!!")
             self.jasminParser.loadVar(var[0], var[1])
             ctx.type = var[1]
+        else:
+            ctx.type = ctx.getChild(0).type
 
 
 

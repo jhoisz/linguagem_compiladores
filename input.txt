@@ -1,19 +1,15 @@
 main:
     var:
-        x, y,z: int;
-        nome: str;
-        print("digite o valor de x:");
-        scanf(x);
-        print("digite o valor de y:");
-        scanf(y);
-        while(x<100):
-            if(x>y):
-            break;
-            end
-            if(x<10):
-            print("pouco");
-            end
-            print(x);
-            x = x + 2;
-        end
+        nota1, nota2,nota3,media:float;
+        z : int;
+        nome :str;
+    print("digite o valor da 1 nota");
+    scanf(nota1);
+    print("digite o valor da 2 nota");
+    scanf(nota2);
+    print("digite o valor da 3 nota");
+    scanf(nota3);
+    print("a media eh:");
+    media= (nota1+nota2+nota3)/3;
+    print(media);
 end

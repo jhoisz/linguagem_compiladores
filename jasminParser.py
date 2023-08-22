@@ -15,6 +15,14 @@ class JasminParser:
             "<=": "if_icmpgt",
             "<": "if_icmpge",
         }
+        self.operators_reverse_simple = {
+            "!=": "ifeq",
+            "==": "ifne",
+            ">=": "iflt",
+            ">": "ifle",
+            "<=": "ifgt",
+            "<": "ifge",
+        }
     
     def writeLn(self, content):
          self.file.write(content + '\n')
@@ -35,15 +43,15 @@ class JasminParser:
         self.writeLn('getstatic java/lang/System/out Ljava/io/PrintStream;')
         self.writeLn(f'astore {address}')
 
-    #print de constantes
-    def createPrintValue(self, value):
+    def getPrint(self):
         self.writeLn('getstatic java/lang/System/out Ljava/io/PrintStream;')
-        self.writeLn(f'ldc {value}')
+
+    #print de constantes
+    def createPrintValue(self):
         self.writeLn('invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V')
 
     #chamando o print para uma única variável de acordo com seu tipo
     def createPrint(self, args, type):
-        self.writeLn('getstatic java/lang/System/out Ljava/io/PrintStream;')
         if (type == "str"):
             self.writeLn(f'aload {args}')
             self.writeLn('invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V')
@@ -83,7 +91,7 @@ class JasminParser:
 
     #colocando o valor de uma constante na pilha
     def loadConst(self,value,type):
-        if type == "str":
+        if type == "str" and value== "":
             self.writeLn(f'ldc \"{value}\"')
         else:
             self.writeLn(f'ldc {value}')
@@ -98,8 +106,12 @@ class JasminParser:
         elif type == "float":
             self.writeLn(f'fstore {id}')
 
-    def callCondition(self, logicOp, type):
-        self.writeLn(f'{self.operators_reverse[logicOp]} l{self.ifstack[-1][0]if type=="if"else self.loopstack[-1][1]}')
+    def callCondition(self, logicOp, type,typeIf):
+        if typeIf == "int":
+            self.writeLn(f'{self.operators_reverse[logicOp]} l{self.ifstack[-1][0]if type=="if"else self.loopstack[-1][1]}')
+        elif typeIf == "float":
+            self.writeLn("fcmpl")
+            self.writeLn(f'{self.operators_reverse_simple[logicOp]} l{self.ifstack[-1][0]if type=="if"else self.loopstack[-1][1]}')
 
     def aritimeticOperand(self,op,type):
         if type == "int":
@@ -111,6 +123,9 @@ class JasminParser:
                 self.writeLn("imul")
             if op == "/":
                 self.writeLn("idiv")
+            if op == "@":
+                self.writeLn("ldc -1")
+                self.writeLn("imul")
         if type == "float":
             if op == "+":
                 self.writeLn("fadd")
@@ -120,6 +135,9 @@ class JasminParser:
                 self.writeLn("fmul")
             if op == "/":
                 self.writeLn("fdiv")
+            if op == "@":
+                self.writeLn("ldc -1.0")
+                self.writeLn("fmul")
 
     def placeLabelIf(self, type):
         if type == "else":
@@ -144,6 +162,22 @@ class JasminParser:
             self.writeLn(f'goto l{self.loopstack[-1][0]}')
         elif type == "while" and local == "end":
             self.writeLn(f'goto l{self.loopstack[-1][1]}')
+
+    def intToFloat(self, pos):
+        if pos == 1:
+            self.writeLn("swap")
+            self.writeLn("i2f")
+            self.writeLn("swap")
+        else:
+            self.writeLn("i2f")
+
+    def floatToInt(self, pos):
+        if pos == 1:
+            self.writeLn("swap")
+            self.writeLn("f2i")
+            self.writeLn("swap")
+        else:
+            self.writeLn("f2i")
 
 
     def createIfLabels(self):

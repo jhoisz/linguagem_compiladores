@@ -17,6 +17,7 @@ def main(stream):
     walker.walk(l, tree)
 
 
+
 if __name__ == '__main__':
     with open('input.txt', 'r') as f:
         stream = f.read()
