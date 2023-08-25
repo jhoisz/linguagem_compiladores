@@ -8,50 +8,36 @@ dup
 getstatic java/lang/System/in Ljava/io/InputStream;
 invokespecial java/util/Scanner/<init>(Ljava/io/InputStream;)V
 astore 0
-ldc 0.0
-fstore 1
-ldc 0.0
-fstore 2
-ldc 0.0
-fstore 3
-ldc 0.0
-fstore 4
 ldc 0
-istore 5
-ldc ""
-astore 6
+istore 1
+ldc 0
+istore 2
+ldc 1
+istore 2
+iload 2
+ifeq l0
 getstatic java/lang/System/out Ljava/io/PrintStream;
-ldc "digite o valor da 1 nota"
+ldc "media"
 invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
-aload 0
-invokevirtual java/util/Scanner/nextFloat()F
-fstore 1
+l0:
+ldc 1
+istore 1
+l2:
+ldc 1
+ifeq l3
+iload 1
+ldc 1
+iadd
+istore 1
 getstatic java/lang/System/out Ljava/io/PrintStream;
-ldc "digite o valor da 2 nota"
-invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
-aload 0
-invokevirtual java/util/Scanner/nextFloat()F
-fstore 2
-getstatic java/lang/System/out Ljava/io/PrintStream;
-ldc "digite o valor da 3 nota"
-invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
-aload 0
-invokevirtual java/util/Scanner/nextFloat()F
-fstore 3
-getstatic java/lang/System/out Ljava/io/PrintStream;
-ldc "a media eh:"
-invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
-fload 1
-fload 2
-fadd
-fload 3
-fadd
-ldc 3
-i2f
-fdiv
-fstore 4
-getstatic java/lang/System/out Ljava/io/PrintStream;
-fload 4
-invokevirtual java/io/PrintStream/println(F)V
+iload 1
+invokevirtual java/io/PrintStream/println(I)V
+iload 1
+ldc 10
+if_icmple l4
+goto l3
+l4:
+goto l2
+l3:
 return
 .end method

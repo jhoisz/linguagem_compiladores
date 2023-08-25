@@ -122,7 +122,16 @@ class LanguageListener(ParseTreeListener):
 
     # Exit a parse tree produced by LanguageParser#conditions.
     def exitConditions(self, ctx:LanguageParser.ConditionsContext):
-        pass
+        if ctx.ID() is not None :
+            if ctx.ID().getText() not in self.symbolTable:
+                raise Exception("variavel não declarada anteriormente")
+            else:
+                var = self.symbolTable[ctx.ID().getText()]
+                self.jasminParser.loadVar(var[0],var[1])
+                self.jasminParser.callCondition("",ctx.inherit,"bool")
+        elif ctx.BOOL() is not None:
+            self.jasminParser.loadConst(ctx.BOOL().getText(),"bool")
+            self.jasminParser.callCondition("", ctx.inherit, "bool")
 
 
     # Enter a parse tree produced by LanguageParser#ifelse.
@@ -410,7 +419,9 @@ class LanguageListener(ParseTreeListener):
                 typeIf = "float"
             if ctx.inherit is not "attr":
                 self.jasminParser.callCondition(ctx.logicOp().getText(),ctx.inherit,typeIf)
-            ctx.type = "bool"
+            else:
+                self.jasminParser.executeBoolExpression(ctx.logicOp().getText(),typeIf)
+
 
 
     # Enter a parse tree produced by LanguageParser#notExp.
@@ -419,7 +430,7 @@ class LanguageListener(ParseTreeListener):
 
     # Exit a parse tree produced by LanguageParser#notExp.
     def exitNotExp(self, ctx:LanguageParser.NotExpContext):
-        pass
+        self.jasminParser.xor()
 
     # Enter a parse tree produced by LanguageParser#elemAritmetic.
     def enterElemAritmetic(self, ctx:LanguageParser.ElemAritmeticContext):
@@ -477,7 +488,7 @@ class LanguageListener(ParseTreeListener):
         elif type == "str":
             return ""
         elif type == "bool":
-            return 0
+            return "false"
         elif type == "float":
             return 0.0
 

@@ -64,11 +64,11 @@ class JasminParser:
             self.writeLn('invokevirtual java/io/PrintStream/println(F)V')
 
     def loadVar(self,args,type):
-        if (type == "str"):
+        if type == "str":
             self.writeLn(f'aload {args}')
-        elif(type == "int"):
+        elif type == "int" or type == "bool":
             self.writeLn(f'iload {args}')
-        elif (type == "float"):
+        elif type == "float":
             self.writeLn(f'fload {args}')
 
     #inicializando scanner
@@ -94,6 +94,12 @@ class JasminParser:
     def loadConst(self,value,type):
         if type == "str" and value== "":
             self.writeLn(f'ldc \"{value}\"')
+        elif type == 'bool' and value == "true":
+            self.writeLn('ldc 1')
+        elif type == 'bool' and value == "false":
+            self.writeLn('ldc 0')
+        elif type == 'bool':
+            raise Exception(f'valor {value} inválido para booleano')
         else:
             self.writeLn(f'ldc {value}')
     #guradando valor em uma variável no enderco id
@@ -113,6 +119,23 @@ class JasminParser:
         elif typeIf == "float":
             self.writeLn("fcmpl")
             self.writeLn(f'{self.operators_reverse_simple[logicOp]} l{self.ifstack[-1][0]if type=="if"else self.loopstack[-1][1]}')
+        elif typeIf == "bool":
+            self.writeLn(
+                f'ifeq l{self.ifstack[-1][0] if type == "if" else self.loopstack[-1][1]}')
+
+    def executeBoolExpression(self,logicOp, typeIf):
+        if typeIf == "int":
+            self.writeLn(
+                f'{self.operators_reverse[logicOp]} l{self.count}')
+        elif typeIf == "float":
+            self.writeLn("fcmpl")
+            self.writeLn(
+                f'{self.operators_reverse_simple[logicOp]} l{self.count}')
+        self.writeLn("ldc 1")
+        self.writeLn(f'l{self.count}:')
+        self.writeLn("ldc 0")
+        self.writeLn(f'l{self.count + 1}:')
+        self.count+=2
 
     def aritimeticOperand(self,op,type):
         if type == "int":
@@ -146,6 +169,14 @@ class JasminParser:
         else:
             self.writeLn(f'l{self.ifstack[-1][1]}:')
             self.ifstack.pop()
+
+    def ifBoolprint(self, _not=False, _ctx='print'):
+        self.writeLn(f'ifne {self.count}')
+        self.loadConst('true','str')
+        self.writeLn(f'l{self.count}:')
+        self.loadConst('false', 'str')
+        self.writeLn(f'l{self.count+1}:')
+        self.count +=2
 
     def placeLabelLoop(self, type):
         if type == "while" :
@@ -191,3 +222,5 @@ class JasminParser:
     # def clean(self, type):
     #     if type!= "str":
     #         self.writeLn('pop')
+    def xor(self):
+        self.writeLn("ixor")

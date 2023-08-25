@@ -1,15 +1,17 @@
 main:
     var:
-        nota1, nota2,nota3,media:float;
         z : int;
-        nome :str;
-    print("digite o valor da 1 nota");
-    scanf(nota1);
-    print("digite o valor da 2 nota");
-    scanf(nota2);
-    print("digite o valor da 3 nota");
-    scanf(nota3);
-    print("a media eh:");
-    media= (nota1+nota2+nota3)/3;
-    print(media);
+        flag :bool;
+    flag = true;
+    if(flag):
+        print("media");
+    end
+    z=1;
+    while(true):
+        z=z+1;
+        print(z);
+        if(z>10):
+            break;
+        end
+    end
 end
