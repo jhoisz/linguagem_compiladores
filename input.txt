@@ -2,16 +2,9 @@ main:
     var:
         z : int;
         flag :bool;
-    flag = true;
-    if(flag):
-        print("media");
-    end
+    flag = false;
     z=1;
-    while(true):
-        z=z+1;
-        print(z);
-        if(z>10):
-            break;
-        end
-    end
+    print(2+3*4);
+    print(!flag);
+
 end

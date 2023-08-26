@@ -30,7 +30,7 @@ class JasminParser:
     def createMain(self):
         self.writeLn('.method public static main([Ljava/lang/String;)V')
 
-    def createHeader(self, stack=10, locals=7):
+    def createHeader(self, stack=20, locals=10):
         self.writeLn(f'.limit stack {stack}')
         self.writeLn(f'.limit locals {locals}')
 
@@ -48,8 +48,17 @@ class JasminParser:
         self.writeLn('getstatic java/lang/System/out Ljava/io/PrintStream;')
 
     #print de constantes
-    def createPrintValue(self):
-        self.writeLn('invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V')
+    def createPrintValue(self,type):
+        if (type == "str"):
+            self.writeLn('invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V')
+        elif (type == "int"):
+            self.writeLn('invokevirtual java/io/PrintStream/println(I)V')
+        elif (type == "float"):
+            self.writeLn('invokevirtual java/io/PrintStream/println(F)V')
+        elif (type == "bool"):
+            self.ifBoolprint()
+            self.writeLn('invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V')
+
 
     #chamando o print para uma única variável de acordo com seu tipo
     def createPrint(self, args, type):
@@ -62,6 +71,10 @@ class JasminParser:
         elif (type == "float"):
             self.writeLn(f'fload {args}')
             self.writeLn('invokevirtual java/io/PrintStream/println(F)V')
+        elif(type == 'bool'):
+            self.writeLn(f'iload {args}')
+            self.ifBoolprint()
+            self.writeLn('invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V')
 
     def loadVar(self,args,type):
         if type == "str":
@@ -132,6 +145,7 @@ class JasminParser:
             self.writeLn(
                 f'{self.operators_reverse_simple[logicOp]} l{self.count}')
         self.writeLn("ldc 1")
+        self.writeLn((f'goto l{self.count+1}'))
         self.writeLn(f'l{self.count}:')
         self.writeLn("ldc 0")
         self.writeLn(f'l{self.count + 1}:')
@@ -171,10 +185,11 @@ class JasminParser:
             self.ifstack.pop()
 
     def ifBoolprint(self, _not=False, _ctx='print'):
-        self.writeLn(f'ifne {self.count}')
-        self.loadConst('true','str')
+        self.writeLn(f'ifne l{self.count}')
+        self.writeLn(f'ldc \"false\"')
+        self.writeLn(f'goto l{self.count+1}')
         self.writeLn(f'l{self.count}:')
-        self.loadConst('false', 'str')
+        self.writeLn(f'ldc \"true\"')
         self.writeLn(f'l{self.count+1}:')
         self.count +=2
 
@@ -223,4 +238,5 @@ class JasminParser:
     #     if type!= "str":
     #         self.writeLn('pop')
     def xor(self):
+        self.writeLn("iconst_1")
         self.writeLn("ixor")

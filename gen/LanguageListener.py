@@ -199,8 +199,8 @@ class LanguageListener(ParseTreeListener):
             if param.ID() is not None:
                 id = self.symbolTable[param.ID().getText()]
                 self.jasminParser.createPrint(id[0],id[1])
-            else:
-                self.jasminParser.createPrintValue()
+            elif param.allExp() is not None:
+                self.jasminParser.createPrintValue(param.allExp().type)
 
 
     # Enter a parse tree produced by LanguageParser#printParams.
@@ -317,7 +317,7 @@ class LanguageListener(ParseTreeListener):
             self.jasminParser.loadConst(ctx.BOOL().getText(), "bool")
             ctx.type = "bool"
 
-    # Enter a parse tree produced by LanguageParser#expression.
+    # Enter a parse tree produced by LanguageParserion.
     def enterExpression(self, ctx:LanguageParser.ExpressionContext):
         child = ctx.getChild(2)
         child.inherit = 'attr'
@@ -341,7 +341,9 @@ class LanguageListener(ParseTreeListener):
 
     # Enter a parse tree produced by LanguageParser#allExp.
     def enterAllExp(self, ctx:LanguageParser.AllExpContext):
-        pass
+        child = ctx.getChild(0)
+        if hasattr(ctx,"inherit"):
+            child.inherit = ctx.inherit
 
     # Exit a parse tree produced by LanguageParser#allExp.
     def exitAllExp(self, ctx:LanguageParser.AllExpContext):
@@ -398,7 +400,9 @@ class LanguageListener(ParseTreeListener):
     def exitLogicExp(self, ctx:LanguageParser.LogicExpContext):
         typeIf = ""
         if ctx.logicExp() is not None and len(ctx.logicExp())==1:
-            ctx.type = "ifunario"
+            ctx.type = "bool"
+        elif ctx.notExp() is not None:
+            ctx.type='bool'
         else:
             operand1 = ctx.elemLogic()[0]
             operand2 = ctx.elemLogic()[1]
@@ -417,10 +421,11 @@ class LanguageListener(ParseTreeListener):
                 else:
                     self.jasminParser.intToFloat(1)
                 typeIf = "float"
-            if ctx.inherit is not "attr":
+            if hasattr(ctx,"inherit") and ctx.inherit is not "attr":
                 self.jasminParser.callCondition(ctx.logicOp().getText(),ctx.inherit,typeIf)
             else:
                 self.jasminParser.executeBoolExpression(ctx.logicOp().getText(),typeIf)
+            ctx.type = 'bool'
 
 
 
