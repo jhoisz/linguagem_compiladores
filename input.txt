@@ -1,18 +1,29 @@
 main:
     var:
-        z : int;
-        flag :bool;
-    flag = false;
-    z=1;
-    print(2+3*4);
-    print(!flag);
-    while(true):
-        if(z==10):
-            break;
-        end
-        z=z+1;
-        print(z);
-        break;
-    end
+        nota1, nota2,nota3,media:float;
+        continua : int;
+        const NUMBER = 3;
 
+    while (true):
+        print("digite o valor da 1 nota");
+        scanf(nota1);
+
+        print("digite o valor da 2 nota");
+        scanf(nota2);
+
+        print("digite o valor da 3 nota");
+        scanf(nota3);
+
+        media= (nota1+nota2+nota3) / NUMBER;
+
+        print("a media e:");
+        print(media);
+
+        print("continuar? Sim-1/Nao-0");
+        scanf(continua);
+
+        if (continua != 1):
+            break;
+	    end
+    end
 end
