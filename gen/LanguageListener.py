@@ -178,7 +178,10 @@ class LanguageListener(ParseTreeListener):
 
     # Exit a parse tree produced by LanguageParser#break.
     def exitBreak(self, ctx:LanguageParser.BreakContext):
-        self.jasminParser.goto("while","end")
+        try:
+            self.jasminParser.goto("while","end")
+        except:
+            raise Exception("Comando break fora de while!")
 
     # Enter a parse tree produced by LanguageParser#nativeFunctions.
     def enterNativeFunctions(self, ctx:LanguageParser.NativeFunctionsContext):

@@ -34,5 +34,23 @@ l0:
 ldc "true"
 l1:
 invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
+l2:
+ldc 1
+ifeq l3
+iload 1
+ldc 10
+if_icmpne l4
+goto l3
+l4:
+iload 1
+ldc 1
+iadd
+istore 1
+getstatic java/lang/System/out Ljava/io/PrintStream;
+iload 1
+invokevirtual java/io/PrintStream/println(I)V
+goto l3
+goto l2
+l3:
 return
 .end method
